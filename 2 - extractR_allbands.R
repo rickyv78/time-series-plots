@@ -12,7 +12,7 @@
   imdir <- "w:\\usgs\\112081"
   shpName <- "wongan_ck_pt_mga50_90m.shp" ## .shp suffix
   attrb <- "name"
-
+#blah
   
 
 

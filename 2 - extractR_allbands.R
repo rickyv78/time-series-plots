@@ -8,18 +8,18 @@
   library(sf)
   
 
-  wkdir <- "Z:\\DEC\\Wheatbelt_Fire_and_Biodiversity_program_SP2018-072\\DATA\\Working\\TS_PLOTS\\wongan_hills"
+  wkdir <- "Z:\\DEC\\Wheatbelt_Fire_and_Biodiversity_program_SP2018-072\\DATA\\Working\\TS_PLOTS\\wongan_hills_transects"
   imdir <- "w:\\usgs\\112081"
-  shpName <- "wongan_ck_pt_mga50_90m.shp" ## .shp suffix
-  attrb <- "name"
+  shpName <- "Senecence_transects_2019_WH_30m.shp" ## .shp suffix
+  attrb <- "Trans_ID"
 #blah
   
 
 
-shp <- st_read(paste0(wkdir, "\\", shpName), quiet = TRUE)
+shp <- st_read(paste0(wkdir, "\\", shpName), quiet = TRUE, stringsAsFactors = FALSE)
 
-sitenames <- shp$name 
-  
+sitenames <- shp[,which(colnames(shp) == attrb), drop = TRUE]
+
 imfolders <- list.files(path = imdir, pattern = "pre.ers$", recursive = TRUE, full.names = TRUE)
 characters <- sapply(imfolders, nchar ) == 58
 imfolders <- as.data.frame(imfolders[characters], stringsAsFactors = FALSE)

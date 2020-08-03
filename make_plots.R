@@ -49,7 +49,9 @@ for (i in 1:nrow(coords)) {  # for each for in object centroids
 polysB<-SpatialPolygons(a,proj4string=CRS(as.character(st_crs(shape))))
 
 polys.df <- SpatialPolygonsDataFrame(polysB, data.frame(id=ID, row.names=ID))
+polys_sf <- st_as_sf(polys.df)
+colnames(polys_sf)[1] <- id_field
+polys_sf <- left_join(polys_sf, st_drop_geometry(shape), by = id_field)
 
-setwd(wd)
-writeOGR(polys.df, ".", layer = paste0(str_sub(shapename, end = -5), "_", radius*2, "m") ,driver="ESRI Shapefile", overwrite_layer = TRUE)
+st_write(polys_sf, paste0(wd, "\\", str_sub(shapename, end = -5), "_", radius*2, "m.shp") )
 

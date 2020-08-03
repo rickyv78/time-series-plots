@@ -51,5 +51,5 @@ polysB<-SpatialPolygons(a,proj4string=CRS(as.character(st_crs(shape))))
 polys.df <- SpatialPolygonsDataFrame(polysB, data.frame(id=ID, row.names=ID))
 
 setwd(wd)
-writeOGR(polys.df, ".", layer = paste0(shapename, "_", radius*2, "m") ,driver="ESRI Shapefile", overwrite_layer = TRUE)
+writeOGR(polys.df, ".", layer = paste0(str_sub(shapename, end = -5), "_", radius*2, "m") ,driver="ESRI Shapefile", overwrite_layer = TRUE)
 

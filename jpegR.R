@@ -23,7 +23,7 @@ stop = NA
   
   shp <- st_read(paste0(wdir, "\\", layer, ".shp"), stringsAsFactors = FALSE)
   pr <- unique(shp$pathrow)
-  p <- 2
+  p <- 3
 for (p in 1:length(pr)){
   imdir <- paste0("w:\\usgs\\", pr[p])
   

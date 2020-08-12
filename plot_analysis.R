@@ -16,7 +16,7 @@ cal <- read_csv("Z:\\DEC\\ForestManagementPlan_2014_2023\\DATA\\Working\\calibra
 csv <- read_csv(paste0(wdir, "\\all_bands_all_sites_2020-08-05.csv"))
 csv.lst <- list.files(path = wdir, pattern = ".csv", full.names = TRUE)
 
-layer <-   "wandoo_pts_to_ck_90m" ##No .shp suffix
+layer <-   "wandoo_pts_to_ck" ##No .shp suffix
 plys <- st_read(paste0(wdir, "\\", layer, ".shp"), stringsAsFactors = FALSE)
 plys <- st_transform(plys, mga50)
 
@@ -34,7 +34,7 @@ sites <- unique(csv$site)
 
 dir.create(path = paste0(wdir, "\\graphs"), showWarnings = FALSE)
 
-i <- 3
+i <- 10
 for(i in 1:length(sites)){
   
 ply <- filter(plys, name == sites[i] )

@@ -1,13 +1,12 @@
 # load the sp and rgdal packages
-
 library(sp)
 library(rgdal)
 library(sf)
 
 # set working directory to data folder
-wd <- "Z:\\RS_SUPPORT\\MargaretByrne_TransitionZones_Oct2019\\Wandoo\\"
+wd <- "Z:\\RS_SUPPORT\\MargaretByrne_TransitionZones_Oct2019\\Wandoo\\plots\\"
 id_field <- "name"
-shapename <- "wandoo_pts_to_ck.shp"
+shapename <- "wandoo_pts_to_ck_att.shp"
 mga50 <- "+proj=utm +zone=50 +south +ellps=GRS80 +units=m +no_defs "
 
 # set the radius for the plots

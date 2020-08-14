@@ -12,7 +12,7 @@ library(doParallel)
 
 wdir <- "Z:\\RS_SUPPORT\\MargaretByrne_TransitionZones_Oct2019\\Wandoo\\plots"
 imdir <- "w:\\usgs\\112082"
-layer <-   "wandoo_pts_to_ck_90m" ##No .shp suffix
+layer <-   "wandoo_pts_to_ck_att_90m" ##No .shp suffix
 attrb <- "name"
 combo <- c(5,4,2)
 
@@ -25,6 +25,9 @@ start = NA
 stop = NA
   
   shp <- st_read(paste0(wdir, "\\", layer, ".shp"), stringsAsFactors = FALSE)
+  
+  unique(shp$origin)
+  shp <- filter(shp, origin == "from Wandoo Mercer Plots")
   
   if("pathrow" %in% colnames(shp)){
   pr <- unique(shp$pathrow)

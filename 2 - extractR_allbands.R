@@ -6,20 +6,41 @@
   library(stringr)
   library(lubridate)
   library(sf)
+  library(snow)
+  library(doParallel)
   
 
-  wkdir <- "Z:\\DEC\\Wheatbelt_Fire_and_Biodiversity_program_SP2018-072\\DATA\\Working\\TS_PLOTS\\wongan_hills_transects"
-  imdir <- "w:\\usgs\\112081"
-  shpName <- "Senecence_transects_2019_WH_30m.shp" ## .shp suffix
-  attrb <- "Trans_ID"
+  wdir <- "Z:\\RS_SUPPORT\\MargaretByrne_TransitionZones_Oct2019\\Wandoo\\plots"
+  imdir <- "w:\\usgs\\112082"
+  layer <-   "wandoo_pts_to_ck_90m"
+  attrb <- "name"
 #blah
   
+  
+shp <- st_read(paste0(wdir, "\\", layer, ".shp"), quiet = TRUE, stringsAsFactors = FALSE)
 
+pr <- unique(shp$pathrow)
+p <- 1
 
-shp <- st_read(paste0(wkdir, "\\", shpName), quiet = TRUE, stringsAsFactors = FALSE)
+#Define how many cores (memory is limiting factor here)
+UseCores <- length(pr)
+#Register CoreCluster
+cl <- makeCluster(UseCores)
+registerDoParallel(cl)
+i <- 1
+foreach(p = 1:length(pr)) %dopar% {
+  library(sf)
+  library(rgdal)
+  library(raster)
+  library(tidyverse) 
+  library(lubridate)
+#for (p in 1:length(pr)){
 
-sitenames <- shp[,which(colnames(shp) == attrb), drop = TRUE]
+imdir <- paste0("w:\\usgs\\", pr[p])
 
+shp.p <- filter(shp, pathrow == pr[p])
+sitenames <- shp.p[,which(colnames(shp.p) == attrb), drop = TRUE]
+    
 imfolders <- list.files(path = imdir, pattern = "pre.ers$", recursive = TRUE, full.names = TRUE)
 characters <- sapply(imfolders, nchar ) == 58
 imfolders <- as.data.frame(imfolders[characters], stringsAsFactors = FALSE)
@@ -30,15 +51,18 @@ imfolders <- mutate(imfolders, date = ymd(paste0(str_sub(name, 16, 19), "-",
                     sat = str_sub(name, 25, 26))
 
 
-siteFolders <- list.dirs(path = wkdir, recursive = FALSE)
+siteFolders <- list.dirs(path = wdir, recursive = FALSE)
 
-alljpg <- as.data.frame(list.files(path = wkdir, pattern = "\\d{4}-\\d{2}-\\d{2}-\\d{3}.jpg" ,recursive = TRUE),
+alljpg <- as.data.frame(list.files(path = wdir, pattern = "\\d{4}-\\d{2}-\\d{2}-\\d{3}.jpg" ,recursive = TRUE),
                              stringsAsFactors = FALSE)
 colnames(alljpg) <- "file"
-alljpg <- mutate(alljpg, site = str_sub(file, start = 12, end = -38),
+alljpg <- mutate(alljpg, site = str_sub(file, start = 12, end = -45),
                  date = ymd(paste0(str_sub(file, start = -18, end = -15), "-", 
                                     str_sub(file, start = -13, end = -12), "-", 
-                                    str_sub(file, start = -10, end = -9))))
+                                    str_sub(file, start = -10, end = -9))), 
+                 pathrow = str_sub(file, start = -25, end = -20))
+
+alljpg <- filter(alljpg, pathrow == pr[p])
 
 qadates <- unique(alljpg$date)
 df <- data.frame()
@@ -48,7 +72,7 @@ for (i in 1:length(qadates)){
   
   landsat <- brick(landsatImName$name[1])  
   names(landsat) <- c("b1", "b2", "b3", "b4", "b5", "b6" )
-  ex <- raster::extract(landsat, shp)
+  ex <- raster::extract(landsat, shp.p)
 
   j <- 2
   
@@ -70,7 +94,9 @@ for (i in 1:length(qadates)){
               b5 = mean(b5),
               b6 = mean(b6))
 
-write_csv(dfg, paste0(wkdir, "//all_bands_", min(dfg$date), "_to_", max(dfg$date), ".csv"))
+write_csv(dfg, paste0(wdir, "//all_bands_", min(dfg$date), "_to_", 
+                      max(dfg$date), "_", pr[p],".csv"))
 
 
-
+}
+stopCluster(cl)

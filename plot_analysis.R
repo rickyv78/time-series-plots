@@ -28,10 +28,6 @@ fireAll <- st_transform(fireAll, mga50)
 
 sites <- unique(csv$site)
 
-#offset <- cal[1,4] # get offset value
-#gain <- cal[1,5] # get gain value
-#gain2 <- cal[1,6]
-
 dir.create(path = paste0(wdir, "\\graphs"), showWarnings = FALSE)
 
 i <- 10
